@@ -4,8 +4,9 @@
 * [ETH - MINE](https://ethermine.org/miners/43C622F82aBCB8017B040bEaEEaAC1B752BAF1e6/dashboard)
 
 # OnChain
-[opensea](https://opensea.io)
-[decentraland](https://decentraland.org)
+* [opensea](https://opensea.io)
+* [decentraland](https://decentraland.org)
+* [chubbies](https://chubbies.io)
 
 
 # Graphic Card
