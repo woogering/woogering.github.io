@@ -1,6 +1,7 @@
 # Mine
 * [BTC - Nicehash](https://www.nicehash.com)
 * [ETH - ethermine](https://ethermine.org)
+* [CFX - Conflux](https://portal.conflux-chain.org)
 * [ETH - MINE](https://ethermine.org/miners/43C622F82aBCB8017B040bEaEEaAC1B752BAF1e6/dashboard)
 
 # OnChain
