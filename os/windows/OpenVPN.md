@@ -8,6 +8,6 @@
 ## 1.2 配置网卡
 修改ovpn文件
 
-配置文件1    dev-node OpenVPN-TAP-1
+[配置文件1](https://github.com/woogering/woogering.github.io/blob/blog/os/windows/files/client1-win.ovpn) dev-node OpenVPN-TAP-1
 
-配置文件2    dev-node OpenVPN-TAP-2
+[配置文件2](https://github.com/woogering/woogering.github.io/blob/blog/os/windows/files/client2-win.ovpn) dev-node OpenVPN-TAP-2
