@@ -2,7 +2,7 @@
 
 ### 官网 - [https://jpom.top/pages/readme](https://jpom.top/pages/readme)
 
-* 目前生产环境使用的版本号为：2.10.6 ，修改过源代码、为监控增加了支持推送钉钉
+* 目前生产环境使用的版本号为：2.10.6 ，[修改过源代码](files/DefaultWebhookPluginImpl.java)、为监控增加了支持推送钉钉
 * 如果后续升级版本，请关注此问题
 * 此文档所有相关配置均对应生产环境
 
