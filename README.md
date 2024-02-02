@@ -1,3 +1,3 @@
 # SEI Util
 
-### [Look NFT](https://woogering.github.io/lookNFT.html)
+### [Look NFT](https://woogering.github.io/LookNFT.html)
