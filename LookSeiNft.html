@@ -1,0 +1,109 @@
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: darkslateblue;
+        }
+
+        .themed-grid-col {
+            padding-top: .75rem;
+            padding-bottom: .75rem;
+            background-color: rgba(112.520718, 44.062154, 249.437846, .15);
+            border: 1px solid rgba(112.520718, 44.062154, 249.437846, .3);
+        }
+
+        .themed-container {
+            padding: .75rem;
+            /* margin-bottom: 1.5rem; */
+            background-color: rgba(112.520718, 44.062154, 249.437846, .15);
+            border: 1px solid rgba(112.520718, 44.062154, 249.437846, .3);
+        }
+
+        .container-img {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .img-block {
+            padding: 5px;
+            width: 160px;
+            height: 190px;
+            display: grid;
+            grid-template-rows: auto auto;
+            justify-items: center;
+        }
+
+        .img-block label {
+            width: 150px;
+            height: 24px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: darkkhaki;
+            font-weight: bold;
+            font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+        }
+
+        .error::placeholder {
+            color: red !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container themed-container text-center alert alert-primary fixed-bottom" id="control">
+        <div class="col-12">
+            <div class="input-group">
+                <input type="text" class="form-control col-8" style="width: 84%;" id="path" placeholder="URL"
+                    value="https://o4qymqditwqzcoft3gfbdirscqvjyhn4ejcshccrccnxx5t5pqiq.arweave.net/dyGGQGidoZE4s9mKEaIyFCqcHbwiRSOIURCbe_Z9fBE/-1.png">
+                <input type="text" class="form-control col-2" style="width: 6%;" id="count" placeholder="Count"
+                    value="333">
+                <button id="load" class="btn btn-primary" style="width: 10%;">Load</button>
+            </div>
+        </div>
+    </div>
+    <div class="container-img" id="container">
+
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("#load").click(function () {
+            let path = $("#path").val();
+            if (path == undefined || path === '') {
+                $('#path').addClass('error');
+                return;
+            }
+            let pathPrefix = path.substring(0, path.lastIndexOf('/') + 1);
+
+            let count = $("#count").val();
+            if (count == undefined || count === '') {
+                $('#count').addClass('error');
+                return;
+            }
+
+            let container = $("#container");
+            container.html("");
+            for (let i = 0; i <= count; i++) {
+                let html = '<div class="img-block"><img src="' + pathPrefix + i + '.png" height="150" width="150"><label>' + i + '</label></div>';
+                container.append($(html));
+            }
+
+        });
+
+        $('#path, #count').focus(function () {
+            $(this).removeClass('error');
+        });
+
+    });
+
+</script>
+
+</html>
