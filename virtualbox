@@ -1,0 +1,8 @@
+windows磁盘0填充
+1.下载
+https://learn.microsoft.com/en-us/sysinternals/downloads/sdelete
+2.执行
+sdelete -z C:
+3.压缩
+cd "c:\Program Files\Oracle\VirtualBox"
+VBoxManage modifymedium disk "C:\Users\wujianing\VirtualBox VMs\Windows10-1\Windows10-1.vdi" --compact
