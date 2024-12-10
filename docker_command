@@ -1,0 +1,18 @@
+docker 私服
+
+1.创建
+docker run -d -p 5000:5000 --name registry -v A:\docker_repo:/var/lib/registry registry:2
+
+2.实例增加配置
+"insecure-registries": [
+  "192.168.50.11:5000"
+]
+
+3.拉取镜像
+docker pull 192.168.50.11:5000/depin-nexus:testnet
+
+4.运行
+docker run -it 192.168.50.11:5000/depin-nexus:testnet bash
+
+5.进入容器
+docker exec -it 192.168.50.11:5000/depin-nexus:testnet bash
