@@ -183,12 +183,13 @@
                 const okWord1 = randomLibraries[0][Math.floor(Math.random() * randomLibraries[0].length)];
                 const okWord2 = randomLibraries[1][Math.floor(Math.random() * randomLibraries[1].length)];
 
-                // 随机决定名字顺序
-                const name = Math.random() < 0.5 ? `${okWord1} ${okWord2}` : `${okWord2} ${okWord1}`;
-
                 // 显示生成成功的状态信息，包含词库信息
                 const libraryNames = randomLibraries.map(lib => lib === words1 ? 'Cosmos[1]' : lib === words2 ? 'Biology[2]' : 'Element[3]');
-                const generateResult = `${libraryNames[0]} + ${libraryNames[1]}`;
+
+                // 随机决定名字顺序
+                const sort = Math.random() < 0.5 ? 'ASC' : 'DESC';
+                const name = (sort === 'ASC' ? `${okWord1} ${okWord2}` : `${okWord2} ${okWord1}`);
+                const generateResult = (sort == 'ASC' ? `${libraryNames[0]} + ${libraryNames[1]}` : `${libraryNames[1]} + ${libraryNames[0]}`);
 
                 const groupHtml = `
                     <div>
