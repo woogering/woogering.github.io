@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>BIOS信息生成器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .div-container {
+            background-color: #f4f4f4;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 12px;
+            width: 120px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .outInfo {
+            margin: 0px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+        }
+
+        div {
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>BIOS信息生成器</h1>
+    <div class="div-container">
+        <h3>备份注册表BIOS数据</h3>
+        <div>
+            <pre id="codeBlock"
+                class="outInfo">reg export HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS "%USERPROFILE%\Desktop\bios-backup.reg"</pre>
+        </div>
+        <div>
+            <button onclick="copyCode()">复制 CMD 命令</button>
+        </div>
+    </div>
+    <div class="div-container">
+        <div>
+            <button onclick="generateBIOSInfo()">生成 BIOS 数据</button>
+            <button onclick="downloadBIOSInfo()">下载 BIOS 数据</button>
+        </div>
+        <div id="biosInfo" class="outInfo"></div>
+    </div>
+
+    <script>
+        // 主板制造商和型号数据
+        const motherboardData = [
+            {
+                manufacturer: "ASUSTeK COMPUTER INC.",
+                models: [
+                    "ASUS PRIME H410M-A",
+                    "ASUS TUF GAMING B460M-PLUS",
+                    "ASUS ROG STRIX Z490-E GAMING",
+                    "ASUS PRIME Z490-P",
+                    "ASUS ROG MAXIMUS XII HERO",
+                    "ASUS ROG STRIX Z590-I GAMING WIFI",
+                    "ASUS TUF GAMING Z590-PLUS",
+                    "ASUS PRIME Z590-P",
+                    "ASUS ROG MAXIMUS XIII HERO",
+                    "ASUS ROG STRIX Z590-E GAMING WIFI",
+                    "ASUS PRIME H610M-F D4",
+                    "ASUS TUF GAMING B660M-PLUS D4",
+                    "ASUS ROG STRIX Z690-A GAMING WIFI D4",
+                    "ASUS PRIME Z690-P D4",
+                    "ASUS ROG MAXIMUS Z690 HERO",
+                    "ASUS ROG STRIX X570-E GAMING",
+                    "ASUS TUF GAMING X570-PLUS",
+                    "ASUS PRIME X570-P",
+                    "ASUS ROG CROSSHAIR VIII HERO",
+                    "ASUS PRO WS X570-ACE",
+                    "ASUS ROG CROSSHAIR VIII DARK HERO",
+                    "ASUS TUF GAMING X570-PRO",
+                    "ASUS PRIME X570-PRO",
+                    "ASUS ROG STRIX X570-F GAMING",
+                    "ASUS ROG CROSSHAIR VIII FORMULA",
+                    "ASUS ProArt X670E-CREATOR WIFI",
+                    "ASUS ROG CROSSHAIR X670E HERO",
+                    "ASUS TUF GAMING X670E-PLUS WIFI",
+                    "ASUS PRIME X670-P",
+                    "ASUS ROG STRIX X670E-F GAMING WIFI"
+                ]
+            },
+            {
+                manufacturer: "GIGA-BYTE TECHNOLOGY CO., LTD.",
+                models: [
+                    "GIGABYTE Z490 AORUS XTREME WATERFORCE",
+                    "GIGABYTE Z490 AORUS MASTER",
+                    "GIGABYTE Z490 AORUS PRO",
+                    "GIGABYTE Z490 GAMING X",
+                    "GIGABYTE B460M DS3H",
+                    "GIGABYTE Z590 AORUS MASTER",
+                    "GIGABYTE Z590 AORUS ELITE",
+                    "GIGABYTE B560M AORUS PRO AX",
+                    "GIGABYTE Z590 AORUS PRO",
+                    "GIGABYTE Z590 AORUS XTREME",
+                    "GIGABYTE Z690 AORUS XTREME",
+                    "GIGABYTE Z690 AORUS MASTER",
+                    "GIGABYTE Z690 AORUS ELITE",
+                    "GIGABYTE B660M AORUS PRO AX",
+                    "GIGABYTE Z690 UD",
+                    "GIGABYTE X570 AORUS XTREME",
+                    "GIGABYTE X570 AORUS MASTER",
+                    "GIGABYTE B550 AORUS ELITE",
+                    "GIGABYTE X570 GAMING X",
+                    "GIGABYTE B550 AORUS PRO",
+                    "GIGABYTE X570 AORUS XTREME",
+                    "GIGABYTE X570 AORUS MASTER",
+                    "GIGABYTE B550 AORUS ELITE",
+                    "GIGABYTE B550 AORUS PRO",
+                    "GIGABYTE B550 GAMING X",
+                    "GIGABYTE X670 AORUS ELITE",
+                    "GIGABYTE X670 AORUS XTREME",
+                    "GIGABYTE B650 AORUS PRO",
+                    "GIGABYTE B650 AORUS ELITE",
+                    "GIGABYTE X670 AORUS MASTER"
+                ]
+            },
+            {
+                manufacturer: "MICRO-STAR INTERNATIONAL CO., LTD.",
+                models: [
+                    "MSI MPG Z490 GAMING EDGE WIFI",
+                    "MSI MPG Z490 GAMING CARBON WIFI",
+                    "MSI MEG Z490 UNIFY",
+                    "MSI MAG B460 TOMAHAWK WIFI",
+                    "MSI B460M PRO-VDH WIFI",
+                    "MSI MPG Z590 GAMING EDGE WIFI",
+                    "MSI MEG Z590 UNIFY",
+                    "MSI MPG Z590 GAMING CARBON WIFI",
+                    "MSI MAG B560M MORTAR WIFI",
+                    "MSI B560M PRO-VDH WIFI",
+                    "MSI MPG Z690 CARBON WIFI",
+                    "MSI MEG Z690 UNIFY",
+                    "MSI MPG Z690 EDGE WIFI",
+                    "MSI MAG B660M MORTAR WIFI",
+                    "MSI B660M PRO-VDH WIFI",
+                    "MSI MEG X570 GODLIKE",
+                    "MSI MPG X570 GAMING EDGE WIFI",
+                    "MSI MEG X570 UNIFY",
+                    "MSI X570-A PRO",
+                    "MSI MAG X570 TOMAHAWK WIFI",
+                    "MSI MEG X570 GODLIKE",
+                    "MSI MPG X570 GAMING PRO CARBON WIFI",
+                    "MSI MEG X570 UNIFY",
+                    "MSI X570-A PRO",
+                    "MSI MAG X570 TOMAHAWK WIFI",
+                    "MSI MEG X670E ACE",
+                    "MSI MPG X670E CARBON WIFI",
+                    "MSI MEG X670E UNIFY",
+                    "MSI PRO X670-P WIFI",
+                    "MSI MAG X670E TOMAHAWK WIFI"
+                ]
+            },
+            {
+                manufacturer: "ASRock Inc.",
+                models: [
+                    "ASRock Z490 Taichi",
+                    "ASRock Z490 Steel Legend",
+                    "ASRock Z490 Pro4",
+                    "ASRock B460M Pro4",
+                    "ASRock Z490 Phantom Gaming 4",
+                    "ASRock Z590 Taichi",
+                    "ASRock Z590 Steel Legend",
+                    "ASRock Z590 Pro4",
+                    "ASRock B560M Pro4",
+                    "ASRock Z590 Phantom Gaming 4",
+                    "ASRock Z690 Taichi",
+                    "ASRock Z690 Steel Legend",
+                    "ASRock Z690 Pro4",
+                    "ASRock B660M Pro4",
+                    "ASRock Z690 Phantom Gaming 4",
+                    "ASRock X570 Taichi",
+                    "ASRock X570 Steel Legend",
+                    "ASRock X570 Pro4",
+                    "ASRock X570 Phantom Gaming 4",
+                    "ASRock X570 Creator",
+                    "ASRock X570 Taichi",
+                    "ASRock X570 Steel Legend",
+                    "ASRock X570 Pro4",
+                    "ASRock X570 Phantom Gaming 4",
+                    "ASRock X570 Creator",
+                    "ASRock X670E Taichi",
+                    "ASRock X670 Steel Legend",
+                    "ASRock X670 Pro4",
+                    "ASRock B650M Steel Legend",
+                    "ASRock X670 Phantom Gaming 4"
+                ]
+            },
+            {
+                manufacturer: "BIOSTAR MICROTECH INT'L CORP.",
+                models: [
+                    "BIOSTAR Z490GTA",
+                    "BIOSTAR Z490 VALKYRIE",
+                    "BIOSTAR Z490M-CL",
+                    "BIOSTAR B460GT3",
+                    "BIOSTAR Z490NH",
+                    "BIOSTAR Z590 VALKYRIE",
+                    "BIOSTAR Z590GTA",
+                    "BIOSTAR Z590M-CL",
+                    "BIOSTAR B560GT3",
+                    "BIOSTAR Z590NH",
+                    "BIOSTAR Z690 VALKYRIE",
+                    "BIOSTAR Z690GTA",
+                    "BIOSTAR Z690M-CL",
+                    "BIOSTAR B660GT3",
+                    "BIOSTAR Z690NH",
+                    "BIOSTAR X570GT8",
+                    "BIOSTAR X570 TOWER",
+                    "BIOSTAR X570M-CL",
+                    "BIOSTAR B550GT3",
+                    "BIOSTAR X570 NH",
+                    "BIOSTAR X570GT8",
+                    "BIOSTAR X570 TOWER",
+                    "BIOSTAR X570M-CL",
+                    "BIOSTAR B550GT3",
+                    "BIOSTAR X570 NH",
+                    "BIOSTAR X670E VALKYRIE",
+                    "BIOSTAR X670GTA",
+                    "BIOSTAR X670M-CL",
+                    "BIOSTAR B650GT3",
+                    "BIOSTAR X670 NH"
+                ]
+            },
+            {
+                manufacturer: "COLORFUL TECHNOLOGY CO., LTD.",
+                models: [
+                    "COLORFUL C.TOWER Z490",
+                    "COLORFUL C.TOWER Z490M",
+                    "COLORFUL Z490M-PLUS",
+                    "COLORFUL Z490 GAMING PRO",
+                    "COLORFUL Z490M-ACE",
+                    "COLORFUL C.TOWER Z590",
+                    "COLORFUL Z590 GAMING PRO",
+                    "COLORFUL Z590M-PLUS",
+                    "COLORFUL Z590M-ACE",
+                    "COLORFUL Z590 GAMING X",
+                    "COLORFUL C.TOWER Z690",
+                    "COLORFUL Z690 GAMING PRO",
+                    "COLORFUL Z690M-PLUS",
+                    "COLORFUL Z690M-ACE",
+                    "COLORFUL Z690 GAMING X",
+                    "COLORFUL CVN X570 GAMING PRO",
+                    "COLORFUL X570M-GAMING PRO",
+                    "COLORFUL CVN B550M GAMING PRO",
+                    "COLORFUL B550M GAMING PRO",
+                    "COLORFUL X570 GAMING ACE",
+                    "COLORFUL CVN X570 GAMING PRO",
+                    "COLORFUL X570M-GAMING PRO",
+                    "COLORFUL CVN B550M GAMING PRO",
+                    "COLORFUL B550M GAMING PRO",
+                    "COLORFUL X570 GAMING ACE",
+                    "COLORFUL CVN X670E GAMING PRO",
+                    "COLORFUL X670 GAMING PRO",
+                    "COLORFUL X670M GAMING PRO",
+                    "COLORFUL B650M GAMING PRO",
+                    "COLORFUL X670 GAMING X"
+                ]
+            }
+        ];
+
+        // 生成随机整数的函数
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function getRandomHex8(max) {
+            // 生成 1 到 254 之间的随机整数
+            const randomInt = Math.floor(Math.random() * max) + 1;
+            // 格式化为 8 位十六进制
+            return randomInt.toString(16).padStart(8, '0').toUpperCase();
+        }
+
+        // 生成BIOS信息的函数
+        function generateBIOSInfo() {
+            const randomManufacturerIndex = getRandomInt(motherboardData.length);
+            const queryBaseBoardManufacturer = motherboardData[randomManufacturerIndex];
+            const randomProductIndex = getRandomInt(queryBaseBoardManufacturer.models.length);
+
+            const biosMajorRelease = getRandomHex8(10);
+            const biosMinorRelease = getRandomHex8(128);
+            const ecFirmwareMajorRelease = "000000ff";
+            const ecFirmwareMinorRelease = "000000ff"
+            const enclosureType = "00000004";
+
+            const baseBoardManufacturer = queryBaseBoardManufacturer.manufacturer;
+            const baseBoardProduct = queryBaseBoardManufacturer.models[randomProductIndex];
+            const baseBoardVersion = "1.0";
+
+            const biosReleaseDate = generateRandomDate();
+            const biosVendor = "American Megatrends International, LLC."
+            const biosVersion = Math.random() < 0.5 ? generateVersion("format1") : generateVersion("format2");
+
+            const systemFamily = "To be filled by O.E.M.";
+            const systemManufacturer = baseBoardManufacturer;
+            const systemProductName = generateSystemProductName();
+            const systemSKU = "To be filled by O.E.M.";
+            const systemVersion = "1.0";
+
+            if (baseBoardProduct) {
+                const biosInfo = `Windows Registry Editor Version 5.00
+
+                [HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS]
+                "BiosMajorRelease"=dword:${biosMajorRelease}
+                "BiosMinorRelease"=dword:${biosMinorRelease}
+                "ECFirmwareMajorRelease"=dword:${ecFirmwareMajorRelease}
+                "ECFirmwareMinorRelease"=dword:${ecFirmwareMinorRelease}
+                "EnclosureType"=dword:${enclosureType}
+                "BaseBoardManufacturer"="${baseBoardManufacturer}"
+                "BaseBoardProduct"="${baseBoardProduct}"
+                "BaseBoardVersion"="${baseBoardVersion}"
+                "BIOSReleaseDate"="${biosReleaseDate}"
+                "BIOSVendor"="${biosVendor}"
+                "BIOSVersion"="${biosVersion}"
+                "SystemFamily"="${systemFamily}"
+                "SsystemManufacturer"="${systemManufacturer}"
+                "SystemProductName"="${systemProductName}"
+                "SystemSKU"="${systemSKU}"
+                "SystemVersion"="${systemVersion}"
+                `;
+                document.getElementById("biosInfo").innerText = biosInfo;
+            } else {
+                document.getElementById("biosInfo").innerText = "未找到该主板制造商的主板型号。";
+            }
+        }
+
+        function generateRandomDate() {
+            // 定义最早和最晚的日期范围
+            const startDate = new Date("10/01/2023"); // 2019年1月1日
+            const endDate = new Date("01/20/2025");  // 2023年12月31日
+
+            // 生成一个介于最早和最晚日期之间的随机日期
+            const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+
+            // 格式化日期为 MM/DD/YYYY
+            const month = (randomDate.getMonth() + 1).toString().padStart(2, '0'); // 月份
+            const day = randomDate.getDate().toString().padStart(2, '0');         // 日期
+            const year = randomDate.getFullYear();                               // 年份
+
+            return `${month}/${day}/${year}`;
+        }
+
+        /**
+         * 生成版本信息
+         * @param {string} format - 版本格式，支持 "format1" 或 "format2"
+         * @returns {string} - 生成的版本信息
+         */
+        function generateVersion(format) {
+            // 生成随机字母和数字组合
+            function generateRandomAlphanumeric(length) {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                let result = "";
+                for (let i = 0; i < length; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return result;
+            }
+
+            // 生成随机数字
+            function generateRandomNumber(length) {
+                let result = "";
+                for (let i = 0; i < length; i++) {
+                    result += Math.floor(Math.random() * 10);
+                }
+                return result;
+            }
+
+            // 生成第一位为1-3的随机数字
+            function generateFirstNumber() {
+                return Math.floor(Math.random() * 3) + 1; // 生成1-3的随机数
+            }
+
+            if (format === "format1") {
+                // 格式1：字母和数字组合.数字
+                const prefix = generateRandomAlphanumeric(6); // 生成6位字母数字组合
+                const suffix = generateRandomNumber(3); // 生成3位数字
+                return `${prefix}.${suffix}`;
+            } else if (format === "format2") {
+                // 格式2：纯数字版本号，如 10.1.2，且第一位只能是1-3
+                const part1 = generateFirstNumber(); // 第一位是1-3，第二位随机
+                const part2 = generateRandomNumber(1); // 生成1位数字
+                const part3 = generateRandomNumber(1); // 生成1位数字
+                return `${part1}.${part2}.${part3}`;
+            } else {
+                throw new Error("不支持的格式类型");
+            }
+
+        }
+
+        function generateSystemProductName() {
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const numbers = "0123456789";
+
+            let letterCount = Math.floor(Math.random() * 4) + 4; // 字母数量：3-6个
+            let numberCount = Math.floor(Math.random() * (letterCount - 1)) + 1; // 数字数量：1 到 (字母数量 - 1) 个
+            let totalLength = letterCount + numberCount + 1; // 总长度：6-9（包含"-"）
+
+            let chars = [];
+
+            // 先放字母
+            for (let i = 0; i < letterCount; i++) {
+                chars.push(letters[Math.floor(Math.random() * letters.length)]);
+            }
+
+            // 先放数字（但不能在首位）
+            let usedIndices = new Set();
+            while (usedIndices.size < numberCount) {
+                let index = Math.floor(Math.random() * (chars.length - 1)) + 1; // 不能是首位
+                if (!usedIndices.has(index)) {
+                    chars[index] = numbers[Math.floor(Math.random() * numbers.length)];
+                    usedIndices.add(index);
+                }
+            }
+
+    // 生成 "-" 的位置（确保不在首位或末尾）
+    let dashIndex;
+    do {
+        dashIndex = Math.floor(Math.random() * (chars.length - 1)) + 1; // 让"-" 位置在 [1, chars.length-2] 之间
+    } while (dashIndex === chars.length - 1); // 确保 "-" 不是最后一位
+
+    // 插入 "-"
+    chars.splice(dashIndex, 0, "-");
+
+    return chars.join("");
+        }
+
+        function copyCode() {
+            // 获取代码块内容
+            let code = document.getElementById("codeBlock").innerText;
+
+            // 创建一个临时文本域
+            let tempTextArea = document.createElement("textarea");
+            tempTextArea.value = code;
+            document.body.appendChild(tempTextArea);
+
+            // 选中文本并复制
+            tempTextArea.select();
+            document.execCommand("copy");
+
+            // 移除临时元素
+            document.body.removeChild(tempTextArea);
+
+            // 提示复制成功
+            alert("代码已复制！");
+        }
+
+        function downloadBIOSInfo() {
+            // 获取 div 内容
+            let text = document.getElementById("biosInfo").innerText;
+
+            // 创建 Blob 对象
+            let blob = new Blob([text], { type: "text/plain" });
+
+            // 创建下载链接
+            let a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = "bios-create.reg"; // 设置下载的文件名
+
+            // 触发点击事件下载
+            document.body.appendChild(a);
+            a.click();
+
+            // 清理 DOM
+            document.body.removeChild(a);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            generateBIOSInfo();
+        });
+
+    </script>
+</body>
+
+</html>
