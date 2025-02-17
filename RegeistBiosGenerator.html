@@ -76,11 +76,9 @@
                     "ASUS TUF GAMING B460M-PLUS",
                     "ASUS ROG STRIX Z490-E GAMING",
                     "ASUS PRIME Z490-P",
-                    "ASUS ROG MAXIMUS XII HERO",
                     "ASUS ROG STRIX Z590-I GAMING WIFI",
                     "ASUS TUF GAMING Z590-PLUS",
                     "ASUS PRIME Z590-P",
-                    "ASUS ROG MAXIMUS XIII HERO",
                     "ASUS ROG STRIX Z590-E GAMING WIFI",
                     "ASUS PRIME H610M-F D4",
                     "ASUS TUF GAMING B660M-PLUS D4",
@@ -90,13 +88,10 @@
                     "ASUS ROG STRIX X570-E GAMING",
                     "ASUS TUF GAMING X570-PLUS",
                     "ASUS PRIME X570-P",
-                    "ASUS ROG CROSSHAIR VIII HERO",
                     "ASUS PRO WS X570-ACE",
-                    "ASUS ROG CROSSHAIR VIII DARK HERO",
                     "ASUS TUF GAMING X570-PRO",
                     "ASUS PRIME X570-PRO",
                     "ASUS ROG STRIX X570-F GAMING",
-                    "ASUS ROG CROSSHAIR VIII FORMULA",
                     "ASUS ProArt X670E-CREATOR WIFI",
                     "ASUS ROG CROSSHAIR X670E HERO",
                     "ASUS TUF GAMING X670E-PLUS WIFI",
@@ -313,10 +308,11 @@
             const biosVendor = "American Megatrends International, LLC."
             const biosVersion = Math.random() < 0.5 ? generateVersion("format1") : generateVersion("format2");
 
-            const systemFamily = "To be filled by O.E.M.";
+            const systemFamily = parseSystemFamily(baseBoardProduct);
             const systemManufacturer = baseBoardManufacturer;
-            const systemProductName = generateSystemProductName();
-            const systemSKU = "To be filled by O.E.M.";
+            const systemSKU = generateSystemSKU();
+            const systemProductName = parseSystemProductName(baseBoardProduct, systemFamily, systemSKU);
+            
             const systemVersion = "1.0";
 
             if (baseBoardProduct) {
@@ -409,7 +405,16 @@
 
         }
 
-        function generateSystemProductName() {
+        function parseSystemFamily(baseBoardProduct) {
+            let match = baseBoardProduct.match(/[A-Z]+\d+(-[A-Z\d]+)?/i);
+            return match ? match[0] : null;
+        }
+
+        function parseSystemProductName(baseBoardProduct, systemFamily, systemSKU){
+            return baseBoardProduct.split(" ")[0] + "-" + systemFamily + "_" + systemSKU;
+        }
+
+        function generateSystemSKU() {
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             const numbers = "0123456789";
 
@@ -434,16 +439,16 @@
                 }
             }
 
-    // 生成 "-" 的位置（确保不在首位或末尾）
-    let dashIndex;
-    do {
-        dashIndex = Math.floor(Math.random() * (chars.length - 1)) + 1; // 让"-" 位置在 [1, chars.length-2] 之间
-    } while (dashIndex === chars.length - 1); // 确保 "-" 不是最后一位
+            // 生成 "-" 的位置（确保不在首位或末尾）
+            let dashIndex;
+            do {
+                dashIndex = Math.floor(Math.random() * (chars.length - 1)) + 1; // 让"-" 位置在 [1, chars.length-2] 之间
+            } while (dashIndex === chars.length - 1); // 确保 "-" 不是最后一位
 
-    // 插入 "-"
-    chars.splice(dashIndex, 0, "-");
+            // 插入 "-"
+            chars.splice(dashIndex, 0, "-");
 
-    return chars.join("");
+            return chars.join("");
         }
 
         function copyCode() {
